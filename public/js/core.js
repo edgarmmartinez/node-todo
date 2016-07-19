@@ -1,1 +1,1 @@
-angular.module('scotchTodo', ['todoController', 'todoService']);
+angular.module('exmHashtrend', ['hashrankController', 'hashrankService']);

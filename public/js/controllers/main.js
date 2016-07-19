@@ -1,50 +1,60 @@
-angular.module('todoController', [])
+angular.module('hashrankController', [])
 
-	// inject the Todo service factory into our controller
-	.controller('mainController', ['$scope','$http','Todos', function($scope, $http, Todos) {
+        // On document ready:
+//        $(function(){
+//            // Instantiate MixItUp:
+//            $('#Container').mixItUp();
+//        });
+
+	// inject the Hashrank service factory into our controller
+	.controller('mainController', ['$scope','$http','$interval','Hashranks', function($scope, $http, $interval, Hashranks) {
 		$scope.formData = {};
 		$scope.loading = true;
 
 		// GET =====================================================================
-		// when landing on the page, get all todos and show them
-		// use the service to get all the todos
-		Todos.get()
+		// when landing on the page, get all hashranks and show them
+		// use the service to get all the hashranks
+		Hashranks.get()
 			.success(function(data) {
-				$scope.todos = data;
+                                console.log("hello from main.js, Hashranks.get()");
+				$scope.hashranks = data;
 				$scope.loading = false;
 			});
 
 		// CREATE ==================================================================
 		// when submitting the add form, send the text to the node API
-		$scope.createTodo = function() {
-
+		$scope.getHashrank = function() {
 			// validate the formData to make sure that something is there
 			// if form is empty, nothing will happen
-			if ($scope.formData.text != undefined) {
-				$scope.loading = true;
-
-				// call the create function from our service (returns a promise object)
-				Todos.create($scope.formData)
-
-					// if successful creation, call our get function to get all the new todos
-					.success(function(data) {
-						$scope.loading = false;
-						$scope.formData = {}; // clear the form so our user is ready to enter another
-						$scope.todos = data; // assign our new list of todos
-					});
-			}
-		};
-
-		// DELETE ==================================================================
-		// delete a todo after checking it
-		$scope.deleteTodo = function(id) {
 			$scope.loading = true;
 
-			Todos.delete(id)
-				// if successful creation, call our get function to get all the new todos
+			// call the create function from our service (returns a promise object)
+			Hashranks.get()
+
+				// if successful creation, call our get function to get all the new hashranks
 				.success(function(data) {
 					$scope.loading = false;
-					$scope.todos = data; // assign our new list of todos
+                                        //data is an array of entries returned by MongoDB, so dereference the first one
+					$scope.hashranks = data[0].hashrankList; // assign our new list of hashranks
 				});
 		};
+
+    
+                $interval(function(){
+                    $scope.getHashrank();
+                },2000);
+
+		// DELETE ==================================================================
+		// delete a hashrank after checking it
+		$scope.deleteHashrank = function(id) {
+			$scope.loading = true;
+
+			Hashranks.delete(id)
+				// if successful creation, call our get function to get all the new hashranks
+				.success(function(data) {
+					$scope.loading = false;
+					$scope.hashranks = data; // assign our new list of hashranks
+				});
+		};
+                //$interval(Hashranks.get(),2000)
 	}]);
